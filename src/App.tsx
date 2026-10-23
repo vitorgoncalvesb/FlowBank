@@ -97,9 +97,16 @@ export default function App() {
 
       media.add('(prefers-reduced-motion: reduce)', () => {
         gsap.set(`${sections}, .card-stack, .note-top, .note-bottom, .art-caption, .waitlist-visual img`, { opacity: 1, y: 0, yPercent: 0, scale: 1, rotation: 0, clearProps: 'transform' })
+        gsap.set('.scroll-progress', { scaleX: 0 })
       })
 
       media.add('(prefers-reduced-motion: no-preference)', () => {
+        gsap.to('.scroll-progress', { scaleX: 1, ease: 'none', scrollTrigger: { trigger: '.app-shell', start: 'top top', end: 'bottom bottom', scrub: 0.2 } })
+
+        gsap.to('.nav', { height: 72, backgroundColor: '#0d0d0ff5', scrollTrigger: { trigger: '.hero', start: 'top top', end: '+=160', scrub: true } })
+
+        gsap.from('.logo-strip > *', { opacity: 0, x: -12, duration: 0.5, stagger: 0.07, ease: 'power2.out', scrollTrigger: { trigger: '.logo-strip', start: 'top 85%', once: true } })
+
         const heroParallax = gsap.timeline({
           scrollTrigger: {
             trigger: '.hero',
@@ -211,6 +218,22 @@ export default function App() {
             transformOrigin: 'bottom center',
           })
         })
+
+        gsap.from('.progress i', { scaleX: 0, transformOrigin: 'left center', duration: 1.1, ease: 'power3.out', scrollTrigger: { trigger: '.dashboard-card', start: 'top 78%', once: true } })
+        gsap.from('.currency-row > div', { opacity: 0, y: 10, duration: 0.4, stagger: 0.08, ease: 'power2.out', scrollTrigger: { trigger: '.currency-row', start: 'top 85%', once: true } })
+
+        gsap.utils.toArray<HTMLElement>('.feature-grid article').forEach((card) => {
+          const icon = card.querySelector('.feature-icon')
+          const arrow = card.querySelector('.icon-inline')
+          card.addEventListener('mouseenter', () => gsap.to(card, { y: -6, duration: 0.25, ease: 'power2.out' }))
+          card.addEventListener('mouseleave', () => gsap.to(card, { y: 0, duration: 0.35, ease: 'power2.out' }))
+          if (icon) card.addEventListener('mouseenter', () => gsap.to(icon, { y: -3, scale: 1.06, duration: 0.25 }))
+          if (arrow) card.addEventListener('mouseenter', () => gsap.to(arrow, { x: 4, duration: 0.2 }))
+        })
+
+        gsap.from('.security-content', { opacity: 0, x: 24, duration: 0.7, ease: 'power3.out', scrollTrigger: { trigger: '.security-content', start: 'top 82%', once: true } })
+
+        gsap.fromTo('.success-message', { opacity: 0, scale: 0.98 }, { opacity: 1, scale: 1, duration: 0.3, ease: 'power2.out' })
       })
     }, appRef)
 
