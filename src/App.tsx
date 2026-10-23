@@ -1,5 +1,9 @@
-import { useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { ArrowUpRight, ArrowDown, ArrowLeft, ArrowRight, Check, Globe2, LockKeyhole, Send, ShieldCheck, Sparkles, Sun } from 'lucide-react'
+
+gsap.registerPlugin(ScrollTrigger)
 
 const iconProps = { size: 18, strokeWidth: 1.8, 'aria-hidden': true as const }
 
@@ -11,7 +15,7 @@ const icons = { arrow: <IconArrow />, mark: <IconMark /> }
 /* Keep decorative icons in one place so the visual language stays consistent. */
 
 function Arrow() { return <span className="icon-inline">{icons.arrow}</span> }
-function Mark() { return <span className="brand-mark" aria-hidden="true">{icons.mark}</span> }
+function Mark() { return null }
 
 function PremiumIcon({ name }: { name: 'globe' | 'send' | 'spark' }) {
   const Icon = name === 'globe' ? Globe2 : name === 'send' ? Send : Sparkles
@@ -84,6 +88,135 @@ export default function App() {
   const [submitted, setSubmitted] = useState(false)
   const [testimonial, setTestimonial] = useState(0)
   const current = localizedTestimonials[testimonial]
+  const appRef = useRef<HTMLDivElement>(null)
+
+  useLayoutEffect(() => {
+    const context = gsap.context(() => {
+      const sections = '.product, .features, .platforms, .proof'
+      const media = gsap.matchMedia()
+
+      media.add('(prefers-reduced-motion: reduce)', () => {
+        gsap.set(`${sections}, .card-stack, .note-top, .note-bottom, .art-caption, .waitlist-visual img`, { opacity: 1, y: 0, yPercent: 0, scale: 1, rotation: 0, clearProps: 'transform' })
+      })
+
+      media.add('(prefers-reduced-motion: no-preference)', () => {
+        const heroParallax = gsap.timeline({
+          scrollTrigger: {
+            trigger: '.hero',
+            start: 'top top',
+            end: 'bottom top',
+            scrub: 0.8,
+            invalidateOnRefresh: true,
+          },
+        })
+        heroParallax
+          .fromTo('.card-stack', { rotation: -12 }, { rotation: -8, yPercent: -10, ease: 'none' }, 0)
+          .to('.note-top', { yPercent: -18, ease: 'none' }, 0)
+          .to('.note-bottom', { yPercent: 12, ease: 'none' }, 0)
+          .to('.art-caption', { yPercent: -8, opacity: 0.45, ease: 'none' }, 0)
+
+        gsap.utils.toArray<HTMLElement>(sections).forEach((section) => {
+          gsap.fromTo(section,
+            { opacity: 0, y: 18, scale: 0.98 },
+            {
+              opacity: 1,
+              y: 0,
+              scale: 1,
+              duration: 0.72,
+              ease: 'power3.out',
+              scrollTrigger: {
+                trigger: section,
+                start: 'top 82%',
+                once: true,
+                invalidateOnRefresh: true,
+              },
+            },
+          )
+        })
+
+        gsap.from('.feature-grid article', {
+          opacity: 0,
+          y: 28,
+          duration: 0.65,
+          stagger: 0.09,
+          ease: 'power3.out',
+          scrollTrigger: { trigger: '.feature-grid', start: 'top 82%', once: true },
+        })
+
+        gsap.from('.platform-list a', {
+          opacity: 0,
+          x: 24,
+          duration: 0.55,
+          stagger: 0.1,
+          ease: 'power3.out',
+          scrollTrigger: { trigger: '.platform-list', start: 'top 82%', once: true },
+        })
+
+        gsap.from('.dashboard-card > *', {
+          opacity: 0,
+          y: 14,
+          duration: 0.45,
+          stagger: 0.06,
+          ease: 'power2.out',
+          scrollTrigger: { trigger: '.dashboard-card', start: 'top 78%', once: true },
+        })
+
+        gsap.from('.phone', {
+          opacity: 0,
+          y: 40,
+          rotate: 3,
+          duration: 0.9,
+          ease: 'back.out(1.2)',
+          scrollTrigger: { trigger: '.platform-visual', start: 'top 82%', once: true },
+        })
+
+        gsap.from('.waitlist-content > *', {
+          opacity: 0,
+          y: 22,
+          duration: 0.6,
+          stagger: 0.08,
+          ease: 'power3.out',
+          scrollTrigger: { trigger: '.waitlist', start: 'top 78%', once: true },
+        })
+
+        gsap.to('.pulse', {
+          scale: 1.35,
+          opacity: 0.55,
+          duration: 1.2,
+          repeat: -1,
+          yoyo: true,
+          ease: 'sine.inOut',
+        })
+
+        gsap.utils.toArray<HTMLElement>('.feature-icon').forEach((icon) => {
+          gsap.to(icon, {
+            rotate: 4,
+            y: -3,
+            duration: 1.8,
+            repeat: -1,
+            yoyo: true,
+            ease: 'sine.inOut',
+            delay: Math.random() * 0.4,
+          })
+        })
+
+        gsap.utils.toArray<HTMLElement>('.chart span, .phone-chart i').forEach((bar) => {
+          gsap.fromTo(bar, { scaleY: 0.7 }, {
+            scaleY: 1,
+            duration: 1.4,
+            repeat: -1,
+            yoyo: true,
+            ease: 'sine.inOut',
+            delay: Math.random() * 0.7,
+            transformOrigin: 'bottom center',
+          })
+        })
+      })
+    }, appRef)
+
+    return () => context.revert()
+  }, [])
+
 
   function submitWaitlist(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -91,7 +224,7 @@ export default function App() {
   }
 
   return (
-    <div className={`app-shell ${isPortuguese ? 'is-pt' : 'is-en'}`}>
+    <div ref={appRef} className={`app-shell ${isPortuguese ? 'is-pt' : 'is-en'}`}>
 
       <header className="nav">
         <a className="brand" href="#top" aria-label="FlowBank home"><img className="flowbank-logo navbar-logo" src="/assets/brand/logoFlowBankSimpleVersion.png" alt="FlowBank" /></a>
@@ -109,7 +242,7 @@ export default function App() {
             <div className="trust-row"><div className="avatars"><span>AM</span><span>JK</span><span>RS</span><span>+</span></div><p>{isPortuguese ? 'Junte-se a' : 'Join'} <strong>18,000+</strong> {isPortuguese ? 'pessoas na lista' : 'people on the waitlist'}</p></div>
           </div>
           <div className="hero-art" aria-label="FlowBank card preview">
-            <div className="card-stack"><div className="card-back" /><article className="bank-card"><div className="card-glow" /><div className="card-top"><span className="card-brand"><img className="flowbank-logo card-logo" src="/assets/brand/logoFlowBank.webp" alt="FlowBank" /></span><span className="card-type">VISA <small>DEBIT</small></span></div><div className="card-middle"><div className="card-chip"><span /><span /><span /><span /></div><span className="contactless" aria-label="Contactless payment">)))</span></div><div className="card-number">••••  ••••  ••••  2048</div><div className="card-bottom"><span>YOUR NAME</span><span className="card-sig">FLOW<span>∞</span></span></div></article></div>
+            <div className="card-stack"><div className="card-back" /><article className="bank-card"><div className="bank-card-inner"><div className="bank-card-face bank-card-front"><div className="card-glow" /><div className="card-top"><span className="card-brand"><img className="flowbank-logo card-logo" src="/assets/brand/logoFlowBank.webp" alt="FlowBank" /></span><span className="card-type">VISA <small>DEBIT</small></span></div><div className="card-middle"><div className="card-chip"><span /><span /><span /><span /></div><span className="contactless" aria-label="Contactless payment">)))</span></div><div className="card-number">••••  ••••  ••••  2048</div><div className="card-bottom"><span>YOUR NAME</span><span className="card-sig">FLOW<span>∞</span></span></div></div><div className="bank-card-face bank-card-back distinctive-back"><span className="back-stripe" /><div className="back-content"><span className="back-label">FLOWBANK / 2026</span><strong>YOUR MONEY.<br />WITHOUT BORDERS.</strong><span className="back-chip" /><span className="back-meta">SECURE GLOBAL ACCOUNT</span></div></div></div></article></div>
             <div className="float-note note-top"><span className="note-icon green"><ArrowUpRight size={16} strokeWidth={2.2} aria-hidden="true" /></span><div><strong>{isPortuguese ? 'Recarga concluída' : 'Top up complete'}</strong><small>+ €500,00 · {isPortuguese ? 'agora' : 'just now'}</small></div></div>
             <div className="float-note note-bottom"><span className="note-icon purple">$</span><div><strong>{isPortuguese ? 'Pago em USD' : 'Paid in USD'}</strong><small>{isPortuguese ? 'Sem taxa de conversão' : 'No conversion fee'}</small></div></div>
             <div className="art-caption">{isPortuguese ? 'O seu dinheiro, em mais lugares.' : 'Your money, in more places.'}</div>

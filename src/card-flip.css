@@ -1,0 +1,18 @@
+.card-stack{perspective:1200px!important}
+.bank-card{transform-style:preserve-3d!important;overflow:visible!important;background:transparent!important;border:0!important;box-shadow:none!important}.bank-card-inner{transform-origin:center center}.bank-card-face{border:1px solid #9feaff66;box-shadow:0 25px 60px #0008,inset 0 1px 0 #ffffff40}.bank-card-back{box-shadow:0 25px 60px #0008,inset 0 1px 0 #ffffff22}
+.bank-card-inner{position:absolute;inset:0;border-radius:18px;transform-style:preserve-3d;transition:transform .9s cubic-bezier(.23,1,.32,1)}
+.card-stack:hover > .bank-card{transform:scale(1.08)!important}.card-stack:hover .bank-card-inner{transform:rotateY(180deg)}
+.bank-card-back.distinctive-back > *{transform-style:flat}
+.bank-card-back.distinctive-back .back-content,.bank-card-back.distinctive-back .back-stripe{transform:none}
+.bank-card-back.distinctive-back{transform:rotateY(180deg)!important}
+@media (max-width:520px){.card-stack:hover > .bank-card{transform:scale(1.03)!important}}
+.bank-card-face{position:absolute;inset:0;width:100%;height:100%;border-radius:18px;backface-visibility:hidden!important;-webkit-backface-visibility:hidden!important}.bank-card-front{background:linear-gradient(145deg,#3d4655 0%,#202a38 52%,#111821 100%)}.bank-card-back.distinctive-back{background:linear-gradient(145deg,#354457 0%,#202a38 52%,#111821 100%)!important;color:#e8eef7!important}.bank-card-back .back-stripe{background:#0d141d}.bank-card-back .back-label,.bank-card-back .back-meta{color:#aeb6c3}.bank-card-back .back-content strong{color:#d8fa56}.bank-card-back .back-chip{background:linear-gradient(135deg,#c3d0d9,#647180);box-shadow:inset 0 0 0 5px #8e9ba7}
+.bank-card-front{transform:rotateY(0deg);overflow:hidden}
+.bank-card-back.distinctive-back{display:block!important;transform:rotateY(180deg);overflow:hidden;background:linear-gradient(145deg,#354457 0%,#202a38 52%,#111821 100%)!important;color:#e8eef7!important}
+.bank-card-back .back-stripe{position:absolute;top:28%;left:0;right:0;height:58px;background:#10130b}
+.bank-card-back .back-content{position:absolute;inset:0;padding:30px;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end}
+.bank-card-back .back-label{position:absolute;top:26px;left:28px;font:600 .55rem 'DM Mono';letter-spacing:.12em}
+.bank-card-back .back-content strong{font:800 1.35rem/1 Syne;letter-spacing:-.06em;margin-bottom:24px}
+.bank-card-back .back-chip{width:54px;height:38px;border:0;border-radius:7px;margin:0 0 18px;background:linear-gradient(135deg,#e8edf0,#7e8994);box-shadow:inset 0 0 0 5px #b7c0c6}
+.bank-card-back .back-meta{font:600 .5rem 'DM Mono';letter-spacing:.12em}
+@media (prefers-reduced-motion:reduce){.bank-card-inner{transition:none}.card-stack:hover .bank-card-inner{transform:none}}
