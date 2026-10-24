@@ -71,7 +71,9 @@ const copy = {
 
 export default function App() {
   const [email, setEmail] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const isPortuguese = false
+  const emailInputRef = useRef<HTMLInputElement>(null)
   const t = copy.en
   const localizedTestimonials = testimonials
   const [submitted, setSubmitted] = useState(false)
@@ -232,7 +234,16 @@ export default function App() {
 
   function submitWaitlist(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (email.trim()) setSubmitted(true)
+    if (!email.trim()) {
+      emailInputRef.current?.focus()
+      return
+    }
+
+    setIsSubmitting(true)
+    window.setTimeout(() => {
+      setIsSubmitting(false)
+      setSubmitted(true)
+    }, 650)
   }
 
   return (
@@ -274,7 +285,7 @@ export default function App() {
 
         <section className="proof section-wrap" id="security"><div className="testimonial"><div className="testimonial-card"><p className="kicker">People in motion</p><blockquote>“{current.quote}”</blockquote><div className="person"><span className={`person-avatar avatar-${current.initials.toLowerCase()}`}>{current.initials}</span><span><strong>{current.name}</strong><small>{current.role}</small></span></div><div className="slider-controls"><button aria-label="Previous testimonial" onClick={() => setTestimonial((testimonial - 1 + testimonials.length) % testimonials.length)}><PrevIcon /></button><span>{String(testimonial + 1).padStart(2,'0')} / 0{testimonials.length}</span><button aria-label="Next testimonial" onClick={() => setTestimonial((testimonial + 1) % testimonials.length)}><NextIcon /></button></div></div></div><div className="security-panel"><div className="security-content"><div className="lock-icon"><LockIcon /></div><p className="kicker">{t.securityKicker}</p><h2>{t.securityTitle}</h2><p>{t.securityText}</p><div className="security-badges"><span><SecurityIcon /><strong>256-bit</strong><small>Encryption</small></span><span><CheckIcon /><strong>FDIC</strong><small>Insured partners</small></span></div></div></div></section>
 
-        <section className="waitlist section-wrap" id="waitlist"><div className="waitlist-content"><Mark /><h2>{t.waitTitle}</h2><p>{t.waitText}</p>{submitted ? <div className="success-message">You’re on the list. We’ll be in touch soon.</div> : <form onSubmit={submitWaitlist}><label htmlFor="email">{t.email}</label><div><input id="email" type="email" required placeholder={t.placeholder} value={email} onChange={(e) => setEmail(e.target.value)} /><button type="submit">{t.join} <Arrow /></button></div><small>{t.noSpam}</small></form>}</div><div className="waitlist-visual" aria-hidden="true"><img src="/assets/illustrations/flowbank-3d-core.svg" alt="" /></div></section>
+        <section className="waitlist section-wrap" id="waitlist"><div className="waitlist-content"><Mark /><h2>{t.waitTitle}</h2><p>{t.waitText}</p>{submitted ? <div className="success-message" role="status" aria-live="polite"><strong>You’re on the list.</strong><span>We’ll be in touch when FlowBank is ready.</span></div> : <form onSubmit={submitWaitlist}><label htmlFor="email">{t.email}</label><div><input ref={emailInputRef} id="email" name="email" type="email" required autoComplete="email" placeholder={t.placeholder} value={email} onChange={(e) => setEmail(e.target.value)} /><button type="submit" disabled={isSubmitting}>{isSubmitting ? 'Joining…' : t.join} {!isSubmitting && <Arrow />}</button></div><small>{t.noSpam} Unsubscribe anytime.</small></form>}</div><div className="waitlist-visual" aria-hidden="true"><img src="/assets/illustrations/flowbank-3d-core.svg" alt="" /></div></section>
       </main>
       <footer><a className="brand" href="#top"><img className="flowbank-logo" src="/assets/brand/logoFlowBank.webp" alt="FlowBank" /></a><span>© 2026 FlowBank Inc.</span><span>Built for a borderless life.</span></footer>
     </div>
