@@ -69,22 +69,11 @@ const copy = {
   },
 } as const
 
-const translatedTestimonials = {
-  en: testimonials,
-  'pt-BR': [
-    { ...testimonials[0], quote: 'A FlowBank fez a minha mudança para Lisboa parecer menos um projeto financeiro e mais um novo começo.', role: 'Designer de produto · Singapura → Lisboa' },
-    { ...testimonials[1], quote: 'Deixei de pensar nas taxas de câmbio. É exatamente isso que um cartão de viagem deve fazer.', role: 'Fundador · Londres' },
-    { ...testimonials[2], quote: 'A visão do orçamento é a primeira que continuei a usar. Simples, tranquila e útil.', role: 'Arquiteta · Nairobi' },
-  ],
-} as const
-
-
 export default function App() {
   const [email, setEmail] = useState('')
-  const [language, setLanguage] = useState<'en' | 'pt-BR'>('en')
-  const isPortuguese = language === 'pt-BR'
-  const t = copy[language]
-  const localizedTestimonials = translatedTestimonials[language]
+  const isPortuguese = false
+  const t = copy.en
+  const localizedTestimonials = testimonials
   const [submitted, setSubmitted] = useState(false)
   const [testimonial, setTestimonial] = useState(0)
   const current = localizedTestimonials[testimonial]
@@ -252,7 +241,7 @@ export default function App() {
       <header className="nav">
         <a className="brand" href="#top" aria-label="FlowBank home"><img className="flowbank-logo navbar-logo" src="/assets/brand/logoFlowBankSimpleVersion.png" alt="FlowBank" /></a>
         <nav aria-label={isPortuguese ? 'Navegação principal' : 'Main navigation'}><a href="#product">{isPortuguese ? 'Produto' : 'Product'}</a><a href="#features">{isPortuguese ? 'Funcionalidades' : 'Features'}</a><a href="#security">{isPortuguese ? 'Segurança' : 'Security'}</a></nav>
-        <div className="nav-actions"><button className="language-toggle" type="button" onClick={() => setLanguage(isPortuguese ? 'en' : 'pt-BR')} aria-label={isPortuguese ? 'Switch to English' : 'Mudar para português'}>{isPortuguese ? 'EN' : 'PT-BR'}</button><a className="nav-cta" href="#waitlist">{isPortuguese ? 'Entrar na lista' : 'Join the waitlist'} <Arrow /></a></div>
+        <div className="nav-actions"><a className="nav-cta" href="#waitlist">Join the waitlist <Arrow /></a></div>
       </header>
 
       <main id="top">
