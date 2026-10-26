@@ -77,6 +77,11 @@ export default function App() {
   const t = copy.en
   const localizedTestimonials = testimonials
   const [submitted, setSubmitted] = useState(false)
+  const [cookieChoice, setCookieChoice] = useState<'accepted' | 'rejected' | null>(() => {
+    try { return (localStorage.getItem('flowbank-cookie-choice') as 'accepted' | 'rejected' | null) } catch { return null }
+  })
+  const [showCookiePreferences, setShowCookiePreferences] = useState(false)
+  const [consent, setConsent] = useState(false)
   const [testimonial, setTestimonial] = useState(0)
   const current = localizedTestimonials[testimonial]
   const appRef = useRef<HTMLDivElement>(null)
@@ -234,7 +239,7 @@ export default function App() {
 
   function submitWaitlist(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (!email.trim()) {
+    if (!email.trim() || !consent) {
       emailInputRef.current?.focus()
       return
     }
@@ -255,7 +260,8 @@ export default function App() {
         <div className="nav-actions"><a className="nav-cta" href="#waitlist">Join the waitlist <Arrow /></a></div>
       </header>
 
-      <main id="top">
+      <a className="skip-link" href="#main-content">Skip to main content</a>
+      <main id="main-content">
         <section className="hero section-wrap">
           <div className="hero-copy">
             <p className="kicker"><span className="pulse" /> {t.heroKicker}</p>
@@ -285,9 +291,11 @@ export default function App() {
 
         <section className="proof section-wrap" id="security"><div className="testimonial"><div className="testimonial-card"><p className="kicker">People in motion</p><blockquote>“{current.quote}”</blockquote><div className="person"><span className={`person-avatar avatar-${current.initials.toLowerCase()}`}>{current.initials}</span><span><strong>{current.name}</strong><small>{current.role}</small></span></div><div className="slider-controls"><button aria-label="Previous testimonial" onClick={() => setTestimonial((testimonial - 1 + testimonials.length) % testimonials.length)}><PrevIcon /></button><span>{String(testimonial + 1).padStart(2,'0')} / 0{testimonials.length}</span><button aria-label="Next testimonial" onClick={() => setTestimonial((testimonial + 1) % testimonials.length)}><NextIcon /></button></div></div></div><div className="security-panel"><div className="security-content"><div className="lock-icon"><LockIcon /></div><p className="kicker">{t.securityKicker}</p><h2>{t.securityTitle}</h2><p>{t.securityText}</p><div className="security-badges"><span><SecurityIcon /><strong>256-bit</strong><small>Encryption</small></span><span><CheckIcon /><strong>FDIC</strong><small>Insured partners</small></span></div></div></div></section>
 
-        <section className="waitlist section-wrap" id="waitlist"><div className="waitlist-content"><Mark /><h2>{t.waitTitle}</h2><p>{t.waitText}</p>{submitted ? <div className="success-message" role="status" aria-live="polite"><strong>You’re on the list.</strong><span>We’ll be in touch when FlowBank is ready.</span></div> : <form onSubmit={submitWaitlist}><label htmlFor="email">{t.email}</label><div><input ref={emailInputRef} id="email" name="email" type="email" required autoComplete="email" placeholder={t.placeholder} value={email} onChange={(e) => setEmail(e.target.value)} /><button type="submit" disabled={isSubmitting}>{isSubmitting ? 'Joining…' : t.join} {!isSubmitting && <Arrow />}</button></div><small>{t.noSpam} Unsubscribe anytime.</small></form>}</div><div className="waitlist-visual" aria-hidden="true"><img src="/assets/illustrations/flowbank-3d-core.svg" alt="" /></div></section>
+        <section className="waitlist section-wrap" id="waitlist"><div className="waitlist-content"><Mark /><h2>{t.waitTitle}</h2><p>{t.waitText}</p>{submitted ? <div className="success-message" role="status" aria-live="polite"><strong>You’re on the list.</strong><span>We’ll be in touch when FlowBank is ready.</span></div> : <form onSubmit={submitWaitlist}><label htmlFor="email">{t.email}</label><div><input ref={emailInputRef} id="email" name="email" type="email" required autoComplete="email" placeholder={t.placeholder} value={email} onChange={(e) => setEmail(e.target.value)} /><button type="submit" disabled={isSubmitting}>{isSubmitting ? 'Joining…' : t.join} {!isSubmitting && <Arrow />}</button></div><label className="consent-row"><input type="checkbox" checked={consent} onChange={(event) => setConsent(event.target.checked)} required /> <span>I agree to receive waitlist updates and accept the <a href="#privacy">Privacy Policy</a>.</span></label><small>{t.noSpam} Unsubscribe anytime.</small></form>}</div><div className="waitlist-visual" aria-hidden="true"><img src="/assets/illustrations/flowbank-3d-core.svg" alt="" /></div></section>
       </main>
-      <footer><a className="brand" href="#top"><img className="flowbank-logo" src="/assets/brand/logoFlowBank.webp" alt="FlowBank" /></a><span>© 2026 FlowBank Inc.</span><span>Built for a borderless life.</span></footer>
+      <footer><a className="brand footer-brand" href="#top"><img className="flowbank-logo" src="/assets/brand/logoFlowBank.webp" alt="FlowBank" /></a><span className="footer-tagline">Built for a borderless life.</span><nav className="legal-links" aria-label="Legal information"><a id="privacy" href="#privacy">Privacy Policy</a><a id="terms" href="#terms">Terms of Use</a><a id="refunds" href="#refunds">Refund &amp; Cancellation</a></nav></footer>
+      {!cookieChoice && <aside className="cookie-banner" role="dialog" aria-label="Cookie preferences"><div><strong>Your privacy matters.</strong><p>We use only essential storage by default. Optional analytics will never run without your consent.</p></div><div className="cookie-actions"><button type="button" onClick={() => { setCookieChoice('rejected'); try { localStorage.setItem('flowbank-cookie-choice', 'rejected') } catch {} }}>Decline</button><button type="button" onClick={() => { setCookieChoice('accepted'); try { localStorage.setItem('flowbank-cookie-choice', 'accepted') } catch {} }}>Accept</button><button type="button" className="cookie-manage" onClick={() => setShowCookiePreferences(true)}>Manage preferences</button></div></aside>}
+      {showCookiePreferences && <aside className="cookie-preferences" role="dialog" aria-modal="true" aria-label="Manage cookie preferences"><h2>Cookie preferences</h2><p>Optional analytics are currently disabled and will remain disabled unless you choose to enable them.</p><button type="button" onClick={() => { setShowCookiePreferences(false); setCookieChoice('rejected'); try { localStorage.setItem('flowbank-cookie-choice', 'rejected') } catch {} }}>Save essential only</button></aside>}
     </div>
   )
 }
